@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -14,6 +16,7 @@ const Login = () => {
             localStorage.setItem('token', response.data.token);
             const decodedToken = JSON.parse(atob(response.data.token.split('.')[1]));
             localStorage.setItem('role', decodedToken.role);
+            navigate('dashboard')
             alert('Login successful');
         } catch (error) {
             alert('Error logging in');
