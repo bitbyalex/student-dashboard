@@ -56,6 +56,19 @@ app.post('/login', (req, res) => {
   res.json({ token });
 });
 
+app.post('/search', (req, res) => {
+    const { query } = req.body;
+    // Example data, replace with actual DB query
+    const students = [
+        { id: 1, branch: 'CS', name: 'John Doe', class: '10A', stream: 'Science' },
+        { id: 2, branch: 'CS', name: 'Jane Doe', class: '10B', stream: 'Commerce' },
+    ];
+    const results = students.filter(student => 
+        student.name.includes(query) || student.id.toString().includes(query)
+    );
+    res.json(results);
+});
+
 // Protected route example
 app.get('/admin', verifyToken, checkRole('admin'), (req, res) => {
   res.send('Welcome to the admin dashboard');

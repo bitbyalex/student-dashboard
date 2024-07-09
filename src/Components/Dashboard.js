@@ -1,60 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import SearchBar from './SearchBar';
+import axios from 'axios';
+import './Dashboard.css';
 
 const Dashboard = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [students, setStudents] = useState([]);
-    const [filteredStudents, setFilteredStudents] = useState([]);
+    const [results, setResults] = useState([]);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        // Fetch the students data from the server
-        // Here you would replace with actual API call
-        setStudents([
-            { branch: 'CS', id: 1, name: 'John Doe', class: '10th', stream: 'Science' },
-            { branch: 'ME', id: 2, name: 'Jane Smith', class: '10th', stream: 'Arts' },
-            // Add more student data here
-        ]);
-    }, []);
+    const handleSearch = async (query) => {
+        try {
+            const response = await axios.post('http://localhost:5001/search', { query });
+            setResults(response.data);
+        } catch (error) {
+            console.error('Error searching for students', error);
+        }
+    };
 
-    useEffect(() => {
-        setFilteredStudents(
-            students.filter(student =>
-                student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                student.id.toString().includes(searchTerm)
-            )
-        );
-    }, [searchTerm, students]);
+    const handleRowClick = (id) => {
+        navigate(`/student/${id}`);
+    };
 
     return (
-        <div className="dashboard">
-            <h1>Student Dashboard</h1>
-            <input
-                type="text"
-                placeholder="Search by ID/Name"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-            />
-            <table>
-                <thead>
-                    <tr>
-                        <th>Branch</th>
-                        <th>Student ID</th>
-                        <th>Student Name</th>
-                        <th>Class</th>
-                        <th>Stream</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredStudents.map(student => (
-                        <tr key={student.id}>
-                            <td>{student.branch}</td>
-                            <td>{student.id}</td>
-                            <td>{student.name}</td>
-                            <td>{student.class}</td>
-                            <td>{student.stream}</td>
+        <div className="dashboard-container">
+            <h1>Dashboard</h1>
+            <SearchBar onSearch={handleSearch} />
+            {results.length > 0 && (
+                <table className="results-table">
+                    <thead>
+                        <tr>
+                            <th>Branch</th>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Stream</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {results.map(result => (
+                            <tr key={result.id} onClick={() => handleRowClick(result.id)}>
+                                <td>{result.branch}</td>
+                                <td>{result.id}</td>
+                                <td>{result.name}</td>
+                                <td>{result.class}</td>
+                                <td>{result.stream}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };

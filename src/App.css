@@ -1,3 +1,4 @@
+/* General Styles */
 .App {
   display: flex;
   flex-direction: column;
@@ -5,6 +6,25 @@
   justify-content: space-between;
 }
 
+input, button {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #61dafb;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+}
+
+button:hover {
+  background-color: #21a1f1;
+}
+
+/* Dashboard Styles */
 .dashboard {
   padding: 20px;
 }
@@ -31,6 +51,7 @@
   background-color: #f2f2f2;
 }
 
+/* Footer Styles */
 footer {
   display: flex;
   justify-content: center;
@@ -38,21 +59,13 @@ footer {
   background-color: #282c34;
 }
 
-button {
+button.footer-button {
   margin: 0 5px;
   padding: 10px 20px;
-  color: white;
-  background-color: #61dafb;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-button:hover {
-  background-color: #21a1f1;
-}
-
-.login {
+/* Login Styles */
+.login, .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -73,43 +86,4 @@ button:hover {
 
 .login button {
   padding: 10px;
-  background-color: #61dafb;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  color: white;
-}
-
-.login button:hover {
-  background-color: #21a1f1;
-}
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-}
-
-input, button {
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 16px;
-}
-
-button {
-  background-color: #61dafb;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #21a1f1;
 }

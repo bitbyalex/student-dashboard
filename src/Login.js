@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {  // Accept setIsLoggedIn as a prop
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -16,14 +16,12 @@ const Login = () => {
             localStorage.setItem('token', response.data.token);
             const decodedToken = JSON.parse(atob(response.data.token.split('.')[1]));
             localStorage.setItem('role', decodedToken.role);
-            navigate('dashboard')
-            alert('Login successful');
+            setIsLoggedIn(true);  // Call the prop to update the login state in App.js
+            navigate('/login/dashboard');
         } catch (error) {
-            alert('Error logging in');
+            setError('Error logging in');
         }
     };
-
-    console.log('Rendering Login component');
 
     return (
         <div className="login-container">
