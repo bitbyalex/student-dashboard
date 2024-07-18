@@ -4,6 +4,7 @@ import Login from './Login';
 import LandingPage from './LandingPage';
 import Dashboard from './Components/Dashboard';
 import StudentDetails from './StudentDetails';
+import Reservation from './Components/Reservation';
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +15,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} /> {/* Pass setIsLoggedIn */}
+                    <Route path="/reservation" element={<Reservation />} />
                     <Route path="/login/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
                     <Route path="/student/:id" element={isLoggedIn ? <StudentDetails /> : <Navigate to="/login" />} />
                 </Routes>
