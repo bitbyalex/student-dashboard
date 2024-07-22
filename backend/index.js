@@ -108,20 +108,34 @@ app.get('/user', verifyToken, checkRole('user'), (req, res) => {
 
 // Create a reservation
 app.post('/reservations', async (req, res) => {
-  const { user_id, first_name, last_name, reservation_date, status } = req.body;
-  if (!user_id || !first_name || !last_name || !reservation_date || !status) {
-    return res.status(400).json({ error: 'Please provide user_id, first_name, last_name, reservation_date, and status' });
+  const { first_name, last_name, email, reservation_date, comments } = req.body;
+
+  if (!first_name || !last_name || !email || !reservation_date || !comments) {
+    return res.status(400).json({ error: 'Please provide first_name, last_name, email, reservation_date, and comments' });
   }
+
   try {
+    // Check for double bookings
+    const conflictingReservations = await pool.query(
+      'SELECT * FROM reservations WHERE reservation_date = $1 AND email = $2',
+      [reservation_date, email]
+    );
+    if (conflictingReservations.rows.length > 0) {
+      return res.status(400).json({ error: 'Double booking detected' });
+    }
+
+    // Insert new reservation
     const result = await pool.query(
-      'INSERT INTO reservations (user_id, first_name, last_name, reservation_date, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [user_id, first_name, last_name, reservation_date, status]
+      'INSERT INTO reservations (first_name, last_name, email, reservation_date, comments) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [first_name, last_name, email, reservation_date, comments]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Get all reservations
 app.get('/reservations', async (req, res) => {

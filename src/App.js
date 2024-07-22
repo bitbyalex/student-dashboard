@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 import Login from './Login';
 import LandingPage from './LandingPage';
 import Dashboard from './Components/Dashboard';
@@ -10,6 +12,7 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     return (
+        <ThemeProvider theme={theme}>
         <Router>
             <div>
                 <Routes>
@@ -21,6 +24,7 @@ const App = () => {
                 </Routes>
             </div>
         </Router>
+        </ThemeProvider>
     );
 };
 
