@@ -1,30 +1,23 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
-import Login from './Login';
-import AdminDashboard from './AdminDashboard';
-import UserDashboard from './UserDashboard';
+import { Route, Navigate } from 'react-router-dom';
 
-const PrivateRoute = ({ component: Component, role, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      localStorage.getItem('token') && localStorage.getItem('role') === role ? (
-        <Component {...props} />
-      ) : (
-        <Redirect to="/" />
-      )
-    }
-  />
-);
+// PrivateRoute component to protect routes based on user role
+const PrivateRoute = ({ element, role, ...rest }) => {
+    const isAuthenticated = localStorage.getItem('token') !== null; // Check if the user is authenticated
+    const userRole = localStorage.getItem('role'); // Get the user role from local storage
 
-const App = () => {
-  return (
-    <Router>
-      <Route path="/" exact component={Login} />
-      <PrivateRoute path="/admin" component={AdminDashboard} role="admin" />
-      <PrivateRoute path="/user" component={UserDashboard} role="user" />
-    </Router>
-  );
+    return (
+        <Route
+            {...rest}
+            element={
+                isAuthenticated && userRole === role ? (
+                    element
+                ) : (
+                    <Navigate to="/" /> // Redirect to login if not authorized
+                )
+            }
+        />
+    );
 };
 
-export default App;
+export default PrivateRoute;
