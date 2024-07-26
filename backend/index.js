@@ -138,7 +138,7 @@ app.post('/reservations', async (req, res) => {
 
 
 // Get all reservations
-app.get('/reservations', async (req, res) => {
+app.get('/admin/reservations',verifyToken, checkRole('admin'), async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM reservations');
     res.status(200).json(result.rows);
