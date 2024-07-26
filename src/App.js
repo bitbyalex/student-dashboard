@@ -5,10 +5,10 @@ import theme from './theme';
 import Login from './Login';
 import { AuthProvider, AuthContext } from './contexts/AuthContext'; // Import AuthContext
 import LandingPage from './LandingPage';
-import Dashboard from './components/Dashboard';
+import Dashboard from './Components/Dashboard';
 import StudentDetails from './StudentDetails';
-import Reservation from './components/Reservation';
-import AdminDashboard from './components/AdminDashboard';
+import Reservation from './Components/Reservation';
+import AdminDashboard from './Components/AdminDashboard';
 
 const PrivateRoute = ({ element, role }) => {
     const { user } = React.useContext(AuthContext); // Get user info from AuthContext
