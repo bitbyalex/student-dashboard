@@ -1,45 +1,57 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './contexts/AuthContext'; // Import AuthContext
-import LoginForm from './LoginForm'; // Import the new LoginForm component
+import { AuthContext } from './contexts/AuthContext';
+import LoginForm from './LoginForm';
+import {jwtDecode} from 'jwt-decode'; // Correct import without curly braces
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext); // Use the AuthContext
+    const { login } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await loginUser(username, password); // Call the login function
+        await loginUser(username, password);
     };
 
     const loginUser = async (username, password) => {
         try {
             const response = await axios.post('http://localhost:5001/login', { username, password });
+            console.log('Response Data:', response.data);
+
+            if (!response.data.token || typeof response.data.token !== 'string') {
+                throw new Error("Invalid token received");
+            }
+
             localStorage.setItem('token', response.data.token);
-            const decodedToken = JSON.parse(atob(response.data.token.split('.')[1]));
-            
+            console.log('Stored Token:', localStorage.getItem('token'));
+
+            const decodedToken = jwtDecode(response.data.token);
+            console.log('Decoded Token:', decodedToken);
+
             // Create user data including the role
             const userData = {
                 id: decodedToken.id,
                 username: decodedToken.username,
                 role: decodedToken.role, // Assuming the role is included in the token
             };
-            
+
             // Set user data in AuthContext
-            login(userData);
+            login(response.data.token); // Update login to take token as argument
+            login(userData); // Also update context with userData
 
             // Redirect based on user role
             if (decodedToken.role === 'admin') {
-                navigate('/login/admin'); // Redirect to Admin Dashboard
+                navigate('/login/admin');
             } else {
-                navigate('/login/dashboard'); // Redirect to User Dashboard or another page
+                navigate('/login/dashboard');
             }
         } catch (error) {
-            setError('Error logging in');
+            setError('Error logging in. Please check your username and password.');
+            console.error(error);
         }
     };
 
