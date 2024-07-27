@@ -26,9 +26,16 @@ const pool = new Pool({
 const initializeDatabase = async () => {
   try {
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS reservations (
         id SERIAL PRIMARY KEY,
-        user_id INT NOT NULL,
+        user_id INT NOT NULL REFERENCES users(id),
         first_name VARCHAR(50) NOT NULL,
         last_name VARCHAR(50) NOT NULL,
         reservation_date DATE NOT NULL,
@@ -45,7 +52,10 @@ initializeDatabase();
 
 const users = [
   { id: 1, username: 'admin', password: bcrypt.hashSync('adminpass', 8), role: 'admin' },
-  { id: 2, username: 'user', password: bcrypt.hashSync('userpass', 8), role: 'user' },
+  { id: 2, username: 'user1', password: bcrypt.hashSync('userpass1', 8), role: 'user' },
+  { id: 3, username: 'user2', password: bcrypt.hashSync('userpass2', 8), role: 'user' },
+  { id: 4, username: 'user3', password: bcrypt.hashSync('userpass3', 8), role: 'user' },
+
 ];
 
 const verifyToken = (req, res, next) => {
@@ -110,6 +120,7 @@ app.get('/user', verifyToken, checkRole('user'), (req, res) => {
 // Create a reservation
 app.post('/reservations', async (req, res) => {
   const { first_name, last_name, email, reservation_date, comments } = req.body;
+  const user_id = req.user.id;
 
   if (!first_name || !last_name || !email || !reservation_date || !comments) {
     return res.status(400).json({ error: 'Please provide first_name, last_name, email, reservation_date, and comments' });
@@ -128,7 +139,7 @@ app.post('/reservations', async (req, res) => {
     // Insert new reservation
     const result = await pool.query(
       'INSERT INTO reservations (first_name, last_name, email, reservation_date, comments) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [first_name, last_name, email, reservation_date, comments]
+      [user_id, first_name, last_name, email, reservation_date, comments]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -145,6 +156,18 @@ app.get('/admin/reservations',verifyToken, checkRole('admin'), async (req, res) 
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Fetch reservations for the logged-in user
+app.get('/user/reservations', verifyToken, async (req, res) => {
+  const user_id = req.user.id;
+
+  try {
+      const result = await pool.query('SELECT * FROM reservations WHERE user_id = $1', [user_id]);
+      res.status(200).json(result.rows);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
   }
 });
 
