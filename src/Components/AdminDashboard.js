@@ -18,6 +18,7 @@ import {
   Button,
   styled,
 } from '@mui/material';
+import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 
 // Styled components
@@ -43,6 +44,8 @@ const SearchContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   flexDirection: 'row',
   marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  justifyContent: 'space-between',
 }));
 
 const AdminDashboard = () => {
@@ -52,17 +55,16 @@ const AdminDashboard = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
-  const { user } = useContext(AuthContext); // Get user from context
+  const { user, token, logout } = useContext(AuthContext); // Get user, token, and logout from context
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      // Redirect or show unauthorized message
-      return; // Prevent fetching if not admin
-    }
-
     const fetchReservations = async () => {
       try {
-        const response = await fetch('http://localhost:5001/reservations');
+        const response = await fetch('http://localhost:5001/admin/reservations', {
+          headers: {
+            Authorization: token,
+          },
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -75,8 +77,14 @@ const AdminDashboard = () => {
       }
     };
 
-    fetchReservations();
-  }, [user]);
+    if (user && user.role === 'admin') {
+      fetchReservations();
+    }
+  }, [user, token]);
+
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/unauthorized" />; // Redirect if not admin
+  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -93,11 +101,27 @@ const AdminDashboard = () => {
     reservation.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleNewReservation = () => {
+    // Logic for handling new reservation
+    console.log('New Reservation Button Clicked');
+  };
+
+  const handleLogout = () => {
+    logout();
+    // Redirect to login or landing page
+    window.location.href = '/login';
+  };
+
   return (
     <Container>
-      <Typography variant="h4" gutterBottom style={{ marginBottom: '16px' }}>
-        Admin Dashboard
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4" gutterBottom>
+          Admin Dashboard
+        </Typography>
+        <Button variant="contained" color="secondary" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
 
       {loading && <CircularProgress />}
       {error && (
@@ -117,17 +141,13 @@ const AdminDashboard = () => {
         <Button variant="contained" color="primary" onClick={() => setSearchTerm('')}>
           Clear
         </Button>
+        <Button variant="contained" color="primary" onClick={handleNewReservation}>
+          New Reservation
+        </Button>
       </SearchContainer>
 
-      <TableContainer
-        component={Paper}
-        style={{
-          maxHeight: '400px', // Fixed height for the table
-          overflowY: 'auto', // Vertical scrolling
-          overflowX: 'hidden', // Disable horizontal scrolling
-        }}
-      >
-        <Table stickyHeader>
+      <TableContainer component={Paper}>
+        <Table>
           <TableHead>
             <TableRow>
               <StyledTableCell>First Name</StyledTableCell>
@@ -149,16 +169,16 @@ const AdminDashboard = () => {
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredReservations.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredReservations.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </Container>
   );
 };

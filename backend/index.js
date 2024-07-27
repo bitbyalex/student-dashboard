@@ -83,6 +83,7 @@ app.post('/login', (req, res) => {
   }
 
   const token = jwt.sign({ id: user.id, role: user.role }, 'secretkey', { expiresIn: '1h' });
+  console.log('Generated Token:', token); // Log the generated token
   res.json({ token });
 });
 
