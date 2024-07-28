@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './contexts/AuthContext';
-import LoginForm from './LoginForm';
+import { AuthContext } from '../contexts/AuthContext';
+import LoginForm from '../components/LoginForm';
 import {jwtDecode} from 'jwt-decode'; // Correct import without curly braces
+import '../styles/Login.css'
 
 const Login = () => {
     const [username, setUsername] = useState('');
