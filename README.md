@@ -1,6 +1,6 @@
 # Student management website
 
-![screenshot](utils/loginscreen.png)
+![screenshot](utils/welcomedashboard.png)
 
 ## Login Page
 
