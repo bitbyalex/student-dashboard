@@ -1,3 +1,12 @@
+# Student management website
+
+![screenshot](welcomedashboard.png)
+
+## Login Page
+
+![screenshot](loginscreen.png)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
