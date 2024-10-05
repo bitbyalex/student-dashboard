@@ -1,10 +1,10 @@
 # Student management website
 
-![screenshot](welcomedashboard.png)
+![screenshot](utils/loginscreen.png)
 
 ## Login Page
 
-![screenshot](loginscreen.png)
+![screenshot](utils/loginscreen.png)
 
 
 # Getting Started with Create React App
