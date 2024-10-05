@@ -16,7 +16,7 @@ app.use(cors({
 }));
 
 const pool = new Pool({
-  user: process.env.DATABASE_USER || 'postgres',
+  user: process.env.DATABASE_USER || 'pyaephyohein',
   host: process.env.DATABASE_HOST || 'localhost',
   database: process.env.DATABASE_NAME || 'reservation_db',
   password: process.env.DATABASE_PASSWORD || '', // Add your PostgreSQL password here if you have one
